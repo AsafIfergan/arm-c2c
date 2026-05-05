@@ -28,10 +28,10 @@
       },
       "kind": "StorageV2",
       "properties": {
+        "publicNetworkAccess": "Disabled",
         "supportsHttpsTrafficOnly": false,
         "minimumTlsVersion": "TLS1_0",
         "allowBlobPublicAccess": true,
-        "publicNetworkAccess": "Enabled",
         "networkAcls": {
           "defaultAction": "Allow",
           "bypass": "AzureServices"

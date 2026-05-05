@@ -31,7 +31,6 @@
         },
         "enableSoftDelete": false,
         "enableRbacAuthorization": false,
-        "publicNetworkAccess": "Enabled",
         "accessPolicies": []
       }
     }
