@@ -1,0 +1,75 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "uniqueSuffix": {
+      "type": "string"
+    },
+    "sqlAdminPassword": {
+      "type": "securestring"
+    },
+    "commonTags": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "sqlServerName": "[concat('armc2c-sql-', parameters('uniqueSuffix'))]",
+    "databaseName": "armc2c-db",
+    "sqlAdminLogin": "armc2cadmin"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2022-05-01-preview",
+      "name": "[variables('sqlServerName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('commonTags')]",
+      "properties": {
+        "administratorLogin": "[variables('sqlAdminLogin')]",
+        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+        "version": "12.0",
+        "publicNetworkAccess": "Enabled",
+        "minimalTlsVersion": "1.0"
+      },
+      "resources": [
+        {
+          "type": "databases",
+          "apiVersion": "2022-05-01-preview",
+          "name": "[variables('databaseName')]",
+          "location": "[parameters('location')]",
+          "tags": "[parameters('commonTags')]",
+          "sku": {
+            "name": "Basic",
+            "tier": "Basic"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+          ],
+          "properties": {}
+        },
+        {
+          "type": "firewallRules",
+          "apiVersion": "2022-05-01-preview",
+          "name": "AllowAllInternet",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "255.255.255.255"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "sqlServerName": {
+      "type": "string",
+      "value": "[variables('sqlServerName')]"
+    }
+  }
+}
